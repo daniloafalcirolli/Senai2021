@@ -32,6 +32,11 @@ const imc_status = (req,res) => {
     })
 }
 
+const add_aluno = (req,res) => {
+    let body = req.body
+    let string = 'insert into alunos(nome, peso, altura, nacimento) values (\'' + body.nome + '\',' + body.peso + ',' + body.altura + ',\'' + body .nascimento + '\')' 
+}
+
 module.exports = {
     get_id,
     imc_id,
