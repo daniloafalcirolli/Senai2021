@@ -53,10 +53,28 @@ const add_aluno = (req,res) => {
 const delete_aluno = (req,res) => {
     let string = 'delete from alunos where id = ' + req.params.id
     con.query(string, (err, result)=>{
-        if(err != null){
-            res.status(400).end()
+        if(result.affectedRows == 0){
+            res.send(400).end()
         }else{
-            res.status(200).end()
+            res.send(200).end()
+        }
+    })
+}
+
+const update_aluno = (req,res) => {
+    let nome = '\''+req.body.nome+'\'';
+    let peso = req.body.peso
+    let altura = req.body.altura
+    let nascimento = '\''+req.body.nascimento+'\''
+    let id = req.body.id
+    let string = `update alunos set nome = ${nome}, peso = ${peso}, altura = ${altura}, nacimento = ${nascimento} where id = ${id}`
+    con.query(string, (err, result)=>{
+        if(result.affectedRows == 1){
+            con.query('select * from alunos where id = '+id, (err,result)=>{
+                res.json(result)
+            })
+        }else{
+            res.send(400).end()
         }
     })
 }
@@ -67,5 +85,6 @@ module.exports = {
     imc_id,
     imc_status,
     add_aluno,
-    delete_aluno
+    delete_aluno,
+    update_aluno
 }
