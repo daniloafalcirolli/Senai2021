@@ -1,4 +1,3 @@
-//Configurações gerais da api
 {
     "mysql":{
         "user":"root",
