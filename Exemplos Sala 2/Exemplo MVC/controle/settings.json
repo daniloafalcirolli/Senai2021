@@ -1,0 +1,8 @@
+//Configurações gerais da api
+{
+    "mysql":{
+        "user":"root",
+        "database":"irrf",
+        "host":"localhost"
+    }
+}
