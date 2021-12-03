@@ -21,6 +21,17 @@ const pegarid = (req, res)=>{
     })
 }
 
+const calc = (req, res)=>{
+    let string = 'select * from funcionarios'
+    con.query(string, (err, result)=>{
+        let array = []
+        result.forEach(e=>{
+            array.push(modelo.calcIRRF(e))
+        })
+        res.json(array)
+    })
+}
+
 const enviar = (req, res)=>{
     let nome_completo = "\""+req.body.nome_completo+"\"";
     let data_desligamento = "\""+req.body.data_desligamento+"\"";
@@ -64,8 +75,9 @@ const apagar = (req, res) => {
 //Exportação da função
 module.exports = {
     pegar,
+    pegarid,
+    calc,
     enviar,
     atualizar,
-    apagar,
-    pegarid
+    apagar
 }
