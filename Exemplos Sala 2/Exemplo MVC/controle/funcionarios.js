@@ -1,5 +1,6 @@
 //Importação da conexão do banco de dados
 const {con} = require('./bdconnect.js')
+const modelo = require('../modelo/funcionario.js')
 
 //Função que faz a requisição do banco de dados fazendo uso da conexão
 const pegar = (req,res)=>{
@@ -9,33 +10,62 @@ const pegar = (req,res)=>{
     })
 }
 
+const pegarid = (req, res)=>{
+    let string = `select * from funcionarios where matricula = ${req.params.matricula}`
+    con.query(string, (err, result)=>{
+        if(result == ""){
+            res.status(404).end()
+        }else{
+            res.json(result)
+        }
+    })
+}
+
 const enviar = (req, res)=>{
-    let matricula = "\""+req.body.matricula+"\"";
     let nome_completo = "\""+req.body.nome_completo+"\"";
     let data_desligamento = "\""+req.body.data_desligamento+"\"";
-    let ultimo_salario = "\""+req.body.ultimo_salario+"\"";
-    let string = `insert into funcionarios(matricula, nome_completo, data_desligamento, ultimo_salario) values (${matricula}, ${nome_completo}, ${data_desligamento}, ${ultimo_salario})`
-    con.query('select * from funcionarios', (err,result)=>{
-        let  i = 0;
-        result.forEach(e => {
-            if(e.matricula == matricula){
-                i++
-            }
-        })
-        if(i == result.lenght){
-            con.query(string, (err, result)=>{
-                if(err) throw err;
-                res.status(201).end()
-            })
+    let ultimo_salario = req.body.ultimo_salario;
+    let string = `insert into funcionarios(nome_completo, data_desligamento, ultimo_salario) values (${nome_completo}, ${data_desligamento}, ${ultimo_salario})`;
+    con.query(string, (err,result)=>{
+        if(result.affectedRows == 1){
+            res.json(modelo.reformJson(req.body, result.insertId));
         }else{
-            res.status(401).end()
+            res.status(400).end();
         }
+    })
+}
 
+const atualizar = (req, res) => {
+    let matricula = req.body.matricula;
+    let nome_completo = "\""+req.body.nome_completo+"\"";
+    let data_desligamento = "\""+req.body.data_desligamento+"\"";
+    let ultimo_salario = req.body.ultimo_salario;
+    let string = `update funcionarios set nome_completo = ${nome_completo}, data_desligamento = ${data_desligamento}, ultimo_salario = ${ultimo_salario} where matricula = ${matricula}`;
+    con.query(string, (err, result)=>{
+        if(result.changedRows == 1){
+            res.json(req.body)
+        }else{
+            res.status(404).end()
+        }
+    })
+}
+
+const apagar = (req, res) => {
+    let string = `delete from funcionarios where matricula = ${req.params.matricula}`
+    con.query(string, (err, result)=>{
+        if(result.affectedRows == 1){
+            res.status(410).end()
+        }else{
+            res.status(404).end()
+        }
     })
 }
 
 //Exportação da função
 module.exports = {
     pegar,
-    enviar
+    enviar,
+    atualizar,
+    apagar,
+    pegarid
 }
